@@ -1,0 +1,16 @@
+[Unit]
+Description=nginx
+After=docker.service
+Requires=docker.service
+
+[Service]
+TimeoutStartSec=0
+Restart=always
+ExecStartPre=-/usr/bin/docker kill nginx-rp
+ExecStartPre=-/usr/bin/docker rm nginx-rp
+ExecStartPre=/usr/bin/docker pull jwilder/nginx-proxy
+ExecStart=/usr/bin/docker run -p 80:80 --name nginx-rp -v /var/run/docker.sock:/tmp/docker.sock:ro
+ExecStop=/usr/bin/docker stop nginx-rp
+
+[Install]
+WantedBy=multi-user.target

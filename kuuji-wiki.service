@@ -1,0 +1,19 @@
+[Unit]
+Description=wiki
+After=nginx-rp.service
+Requires=nginx-rp.service
+
+[Service]
+TimeoutStartSec=0
+Restart=always
+ExecStartPre=-/usr/bin/docker kill kuuji-wiki
+ExecStartPre=-/usr/bin/docker rm kuuji-wiki
+ExecStartPre=/usr/bin/docker pull tutum.co/kuuji/wiki
+ExecStart=/usr/bin/docker run --name kuuji-wiki -e VIRTUAL_HOST=wiki.kuuji.ovh tutum.co/kuuji/wiki
+
+ExecStopPre=/usr/bin/docker commit kuuji-wiki tutum.co/kuuji/wiki
+ExecStopPre=/usr/bin/docker push tutum.co/kuuji/wiki
+ExecStop=/usr/bin/docker stop kuuji-wiki
+
+[Install]
+WantedBy=multi-user.target
